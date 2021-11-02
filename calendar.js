@@ -1,37 +1,47 @@
+'use strict'
 
-function calendar(a, b) {
-  return a + b;
-}
-
-module.exports = calendar;
-
-function make_month_year_line(year, month) {
-  const head_spaces = make_head_spaces(year, month)
-  const month_year_str = make_month_year_str(year, month)
+// {
+//
+// }
+// class MonthYearLine {
+//   constructor(date) {
+//     this.data = makeMonthYearLine(date)
+//   }
+// }
+function makeMonthYearLine(date) {
+  const head_spaces = makeHeadSpaces(date)
+  const month_year_str = makeMonthYearStr(date)
   return require('printf')('% -22s', head_spaces + month_year_str)
 }
 
-function make_month_year_str(year, month) {
-  return `${month}月 ${year}`
+function makeMonthYearStr(date) {
+  return `${date.month}月 ${date.year}`
 }
 
-function calc_head_spaces(year, month) {
-  const year_len = year.toString().length
-  const month_len = month.toString().length
-  return Math.ceil((17 - (year_len + month_len)) / 2)
+function calcHeadSpaces(date) {
+  const yearLen = date.year.toString().length
+  const monthLen = date.month.toString().length
+  return Math.ceil((17 - (yearLen + monthLen)) / 2)
 }
 
-function make_head_spaces(year, month) {
-  return ' '.repeat(calc_head_spaces(year, month))
+function makeHeadSpaces(year, month) {
+  return ' '.repeat(calcHeadSpaces(year, month))
+}
+
+const isUndefined = x => typeof x === "undefined"
+
+function getDate () {
+  const argv = require('minimist')(process.argv.slice(2))
+  const d = new Date()
+  const year = isUndefined(argv.y) ? d.getFullYear() : parseInt(argv.y)
+  const month = isUndefined(argv.m) ? d.getMonth() + 1 : parseInt(argv.m)
+  return {year: year, month: month}
 }
 
 function main() {
-  const d = new Date()
-  const h = make_month_year_line(d.getFullYear(), d.getMonth())
+  const date = getDate()
+  const h = makeMonthYearLine(date)
   console.log(h)
 }
 
-main()
-
-// console.log(require('sprintf-js').sprintf('% 201$s', 'hoge'))
-// console.log(require('printf')('%s', 'hoge'))
+module.exports = {makeMonthYearLine: makeMonthYearLine, get_date: getDate}
