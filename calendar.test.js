@@ -83,7 +83,3 @@ describe('DatesBlock', () => {
     })
   })
 })
-
-describe('Calendar', () => {
-
-})
