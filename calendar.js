@@ -48,28 +48,72 @@
     }
   }
 
-  // class DaysOfWeek {
-  //   constructor() {
-  //     this.data = ''
-  //   }
-  //
-  // }
+  class DaysOfWeekLine {
+    constructor() {
+      this.data = '日 月 火 水 木 金 土  '
+    }
+  }
 
-  // const isUndefined = x => typeof x === "undefined"
-  // function getDate () {
-  //   const year = isUndefined(argv.y) ? date.getFullYear() : parseInt(argv.y)
-  //   const month = isUndefined(argv.m) ? date.getMonth() + 1 : parseInt(argv.m)
-  //   return {year: year, month: month}
-  // }
+  class DatesBlock {
+    constructor(yearMonth) {
+      this.data = this.makeDatesBlock(yearMonth)
+    }
 
-  module.exports = {getDate: getDate, MonthYearLine: MonthYearLine}
-}
+    makeDatesBlock(yearMonth) {
+      const datesStrs = this.getDatesStrs(yearMonth)
+      const weeksStrs = this.makeWeeksStrs(datesStrs)
+      return weeksStrs.join('\n')
+    }
 
+    makeWeeksStrs(datesStrs) {
+      const weeksStrs = []
+      for (let i = 0; i < 6; i++) {
+        const weekHeadIndex = i * 7
+        const weekStr = datesStrs.slice(weekHeadIndex, weekHeadIndex + 7).join(' ')
+        weeksStrs.push(weekStr + ' '.repeat((2)))
+      }
+      return weeksStrs
+    }
 
+    getDatesStrs(yearMonth) {
+      const datesStrs = []
+      const date = this.getFirstDay(yearMonth)
+      for (let i = 0; i < date.getDay(); i++) {
+        datesStrs.push(' '.repeat(2))
+      }
+      for (; date.getMonth() + 1 === yearMonth.month; date.setDate(date.getDate() + 1)) {
+        datesStrs.push(require('printf')('% 2s', date.getDate().toString()))
+      }
+      while (datesStrs.length < 7 * 6) {
+        datesStrs.push(' '.repeat(2))
+      }
+      return datesStrs
+    }
 
+    getFirstDay (yearMonth) {
+      const date = new Date()
+      date.setFullYear(yearMonth.year)
+      date.setMonth(yearMonth.month - 1)
+      date.setDate(1)
+      return date
+    }
+  }
 
-function main() {
-  // const date = getDate()
-  // const h = makeMonthYearLine(date)
-  console.log(h)
+  class Calendar {
+    constructor() {
+      console.log(this.makeCalendar())
+    }
+
+    makeCalendar() {
+      const date = new getDate()
+      const monthYearLine = new MonthYearLine(date)
+      const daysOfWeekLine = new DaysOfWeekLine()
+      const datesBlock = new DatesBlock(date)
+      return [monthYearLine, daysOfWeekLine, datesBlock].map(block => block.data).join('\n')
+    }
+  }
+
+  new Calendar()
+
+  module.exports = {getDate: getDate, MonthYearLine: MonthYearLine, DaysOfWeek: DaysOfWeekLine, DatesBlock: DatesBlock, Calendar: Calendar}
 }
